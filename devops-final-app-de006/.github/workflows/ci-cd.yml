@@ -59,7 +59,9 @@ jobs:
           APP_VERSION: ${{ github.sha }}
         # TODO 1: build và khởi động toàn bộ hệ thống bằng Docker Compose (đọc student.env),
         #         chờ các service sẵn sàng (gợi ý: --wait --wait-timeout 300)
-        run:
+        run: |
+          set -a; source student.env; set +a
+          docker compose --env-file student.env up -d --build --wait --wait-timeout 300
 
       - name: Smoke test
         run: |
@@ -78,8 +80,8 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ______
-          password: ______
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push image lên GHCR
         env:
